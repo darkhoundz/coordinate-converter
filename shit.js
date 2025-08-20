@@ -279,6 +279,8 @@ Longitude: ${lngDeg}° ${lngMin}' ${lngSec}" ${lngDir}`;
             
             const dmsDirectionFirstPattern = /([NSEW])\s*(\d+)°?\s*(\d+)'?\s*(\d+(?:\.\d+)?)"?\s*([NSEW])\s*(\d+)°?\s*(\d+)'?\s*(\d+(?:\.\d+)?)"?/g;
             
+            const decimalWithDirectionPattern = /(\d+\.\d+)'?([NSEW])\s*[\t,\s]+(\d+\.\d+)'?([NSEW])/g;
+            
             const dmPattern = /(\d+)\.(\d+)'(\d+(?:\.\d+)?)"?([NSEW])/g;
             
             const labeledPattern = /(?:lat(?:itude)?[:\s]*(-?\d+\.?\d*)°?\s*(?:long(?:itude)?[:\s]*(-?\d+\.?\d*)°?)?)|(?:long(?:itude)?[:\s]*(-?\d+\.?\d*)°?)/gi;
@@ -302,6 +304,26 @@ Longitude: ${lngDeg}° ${lngMin}' ${lngSec}" ${lngDir}`;
                         lat = parseDMSToDecimal(parseInt(match[6]), parseInt(match[7]), parseFloat(match[8]), match[5]);
                     }
                     coordinates.push({ lat, lng, format: 'DMS Direction First', original: match[0] });
+                }
+            }
+            
+            if (coordinates.length === 0) {
+                while ((match = decimalWithDirectionPattern.exec(text)) !== null) {
+                    let lat, lng;
+                    if (match[2] === 'N' || match[2] === 'S') {
+                        lat = parseFloat(match[1]);
+                        if (match[2] === 'S') lat = -lat;
+                        lng = parseFloat(match[3]);
+                        if (match[4] === 'W') lng = -lng;
+                    } else {
+                        lng = parseFloat(match[1]);
+                        if (match[2] === 'W') lng = -lng;
+                        lat = parseFloat(match[3]);
+                        if (match[4] === 'S') lat = -lat;
+                    }
+                    if (isValidCoordinate(lat, lng)) {
+                        coordinates.push({ lat, lng, format: 'Decimal with Direction', original: match[0] });
+                    }
                 }
             }
             
