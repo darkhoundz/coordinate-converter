@@ -401,7 +401,7 @@ Longitude: ${lngDeg}° ${lngMin}' ${lngSec}" ${lngDir}`;
             
             coordinates.forEach((coord, index) => {
                 html += `<li>
-                    <strong>Point ${index + 1}:</strong> ${coord.lat.toFixed(6)}°, ${coord.lng.toFixed(6)}°
+                    <strong>Point ${index + 1}:</strong> ${coord.lat.toFixed(6)}\t${coord.lng.toFixed(6)}
                     <br><small>Format: ${coord.format} | Original: "${coord.original}"</small>
                 </li>`;
             });
