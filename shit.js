@@ -279,7 +279,7 @@ Longitude: ${lngDeg}° ${lngMin}' ${lngSec}" ${lngDir}`;
             
             const dmsDirectionFirstPattern = /([NSEW])\s*(\d+)°?\s*(\d+)'?\s*(\d+(?:\.\d+)?)"?\s*([NSEW])\s*(\d+)°?\s*(\d+)'?\s*(\d+(?:\.\d+)?)"?/g;
             
-            const decimalWithDirectionPattern = /(\d+\.\d+)'?([NSEW])\s*[\t,\s]+(\d+\.\d+)'?([NSEW])/g;
+            const decimalWithDirectionPattern = /(\d+\.\d+)['"]?([NSEW])\s*[\t,\s]+(\d+\.\d+)['"]?([NSEW])/g;
             
             const dmPattern = /(\d+)\.(\d+)'(\d+(?:\.\d+)?)"?([NSEW])/g;
             
