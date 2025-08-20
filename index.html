@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Coordinate</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" 
+          crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
+    <link rel="stylesheet" href="styles.css">
+
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Smart Coordinate</h1>
+            <h3>By: Tapas-Karga Systems</h3><br>
+            <p>Convert latitude and longitude from Degrees, Minutes, Seconds (DMS) to Decimal Degrees</p>
+        </div>
+
+        <div class="main-layout">
+            <div class="converter-column">
+
+        <div class="converter-section">
+            <div class="input-group">
+                <label>Smart Coordinate Parser</label>
+                <p style="color: #b0b0b0; margin-bottom: 15px; font-size: 0.95rem;">
+                    Paste any coordinate format and it will be automatically parsed and converted!
+                </p>
+                <div class="smart-input-container">
+                    <textarea 
+                        id="smart-input" 
+                        class="smart-textarea" 
+                        placeholder="Paste coordinates here in any format:
+• 10.56'24N 123.13'15&quot;E to 10.54'58&quot;N 123.12'24&quot;E
+• Lat 10.910462° Long 123.095596°
+• 10°52'16&quot;N 125°06'47&quot;E
+• 10.166424, 122.909743
+• And many more formats..."
+                        oninput="parseSmartInput()"
+                    ></textarea>
+                    <button class="clear-btn" onclick="clearSmartInput()">Clear</button>
+                </div>
+            </div>
+
+            <div class="divider">
+                <span>OR</span>
+            </div>
+
+            <div class="input-group">
+                <label>Manual Input - Latitude (North/South)</label>
+                <div class="input-labels">
+                    <span>Degrees</span>
+                    <span>Minutes</span>
+                    <span>Seconds</span>
+                    <span>Direction</span>
+                </div>
+                <div class="coordinate-inputs">
+                    <input type="number" id="lat-deg" placeholder="40" min="0" max="90" step="1">
+                    <input type="number" id="lat-min" placeholder="44" min="0" max="59" step="1">
+                    <input type="number" id="lat-sec" placeholder="54.36" min="0" max="59.999" step="0.001">
+                    <select id="lat-dir">
+                        <option value="N">N</option>
+                        <option value="S">S</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Manual Input - Longitude (East/West)</label>
+                <div class="input-labels">
+                    <span>Degrees</span>
+                    <span>Minutes</span>
+                    <span>Seconds</span>
+                    <span>Direction</span>
+                </div>
+                <div class="coordinate-inputs">
+                    <input type="number" id="lng-deg" placeholder="74" min="0" max="180" step="1">
+                    <input type="number" id="lng-min" placeholder="0" min="0" max="59" step="1">
+                    <input type="number" id="lng-sec" placeholder="21.49" min="0" max="59.999" step="0.001">
+                    <select id="lng-dir">
+                        <option value="W">W</option>
+                        <option value="E">E</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="convert-btn" onclick="convertCoordinates()">Convert to Decimal Degrees</button>
+
+            <div class="error" id="error-message"></div>
+        </div>
+
+        <div class="result-section">
+            <div class="result-group">
+                <label>Decimal Coordinates</label>
+                <div class="result-container">
+                    <textarea class="result-textarea" id="result" readonly placeholder="Converted coordinates will appear here..."></textarea>
+                    <button class="copy-btn" id="copy-btn" onclick="copyToClipboard()">Copy</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="examples">
+            <h3>Smart Parser Examples:</h3>
+            <p><strong>DMS Format:</strong> 10°52'16"N 125°06'47"E</p>
+            <p><strong>DMS Direction First:</strong> N 10°20'03.79" E 122°55'25.24"</p>
+            <p><strong>Decimal Degrees:</strong> 10.910462, 123.095596</p>
+            <p><strong>Labeled Format:</strong> Lat 10.910462° Long 123.095596°</p>
+            <p><strong>Range Format:</strong> 10.56'24N 123.13'15"E to 10.54'58"N 123.12'24"E</p>
+            <p><strong>Complex Format:</strong> LATITUDE:10.857543- LONGITUDE:123.104346°</p>
+            <p><strong>Multiple Points:</strong> Point A: 9° 59' 50.05"N, 122° 45' 49.02"E; Point B: 9° 57' 42.68"N</p>
+            
+            <h3 style="margin-top: 20px;">Classic Examples:</h3>
+            <p><strong>New York City:</strong> 40° 44' 54.36" N, 74° 0' 21.49" W → 40.748433, -74.005969</p>
+            <p><strong>London:</strong> 51° 30' 26" N, 0° 7' 39" W → 51.507222, -0.1275</p>
+            <p><strong>Tokyo:</strong> 35° 40' 39" N, 139° 45' 10" E → 35.6775, 139.752778</p>
+        </div>
+            </div>
+
+            <div class="map-column">
+                <div class="map-container">
+                    <h3>📍 Location Preview</h3>
+                    <div id="map"></div>
+                    <div class="map-info" id="map-info" style="display: none;">
+                        <p><strong>📌 Current Location:</strong></p>
+                        <p class="coordinates" id="map-coordinates">No coordinates selected</p>
+                        <p><strong>🌍 Zoom Level:</strong> <span id="map-zoom">2</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<script src="shit.js"></script>
+</body>
+</html>
